@@ -14,11 +14,11 @@ var trace1 = {
 
 var layout = {
     title: `<b>Top 10 OTUs<b>`,
-      hoverlabel:{
-      bgcolor: "black",
-      font: {color: 'white'}
-  },
-             };
+    hoverlabel:{
+    bgcolor: "black",
+    font: {color: 'white'}
+      },
+           };
 
  var data = [trace1];
 
@@ -86,7 +86,7 @@ bubbleGetDataForId(firstSubId) ;
 //Create a guage -default ID
 //--------------------------------------------//
 var washingFreq = metaData[0].wfreq ;
-console.log("washing", washingFreq)
+console.log("washing: freq", washingFreq)
 //call function
 guageScale(washingFreq) ;
 
@@ -217,7 +217,7 @@ function bubblechart(bubbleData){
       height:600,
       xaxis: {
           title :{
-              text:'OTU ID'
+              text:'<b>OTU ID<b>'
           }
       },
       hoverlabel:{
@@ -298,9 +298,7 @@ var layout = {
         color: '850000'
       }
     }],
-  title: '<b>Belly Button Washing Frequency</b> <br> Scrubs per week',
-  height: 500,
-  width: 500,
+  title: '<b>Belly Button Washing Frequency</b> <br> Scrubs per week',  
   xaxis: {zeroline:false, showticklabels:false,
              showgrid: false, range: [-1, 1]},
   yaxis: {zeroline:false, showticklabels:false,
