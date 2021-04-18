@@ -2,19 +2,28 @@
 // Initialize the plot //
 //---------------------//
 
-function init(x,y) {
+function init(x,y,z) {
     // create a trace for bar Chart
 var trace1 = {
     x: x , 
     y: y,
+    text:z,
     type: 'bar',
     orientation : 'h'
 };
 
+var layout = {
+    title: `<b>Top 10 OTUs<b>`,
+      hoverlabel:{
+      bgcolor: "black",
+      font: {color: 'white'}
+  },
+             };
+
  var data = [trace1];
 
 // Render the plot to the div tag with id "plot"
-Plotly.newPlot("bar", data, {responsive : true});
+Plotly.newPlot("bar", data, layout, {responsive : true});
 }
 
 //------------------------------------------------------------------------------------//
@@ -23,7 +32,7 @@ var data = samples;
 //Print data
 console.log('Main data : ' , data)
 
-//Get subject ID as names f
+//Get subject ID as names 
 var names = data.names ;
 //console.log(names) ;
 
@@ -55,16 +64,32 @@ var top10Obj = getDataForID(firstSubId);
 console.log(`Data for default ${firstSubId}:`, top10Obj)
 
 //call init function to desplay default plot
-init(top10Obj[0].topOtuSamples , top10Obj[0].topOtuIds);
+init(top10Obj[0].topOtuSamples , top10Obj[0].topOtuIds, top10Obj[0].topOtuLabels);
 
 
 //--------------------------------------------//
 //print demographic information for the default ID
 //--------------------------------------------//
 //call the function generate demographic info
-metaDataforID(firstSubId) ;        
+var metaData = metaDataforID(firstSubId) ;        
        
-                       
+//--------------------------------------------//
+//Create a buuble chart -default ID
+//--------------------------------------------//
+
+//call function to create bubble chart
+
+bubbleGetDataForId(firstSubId) ;
+
+
+//--------------------------------------------//
+//Create a guage -default ID
+//--------------------------------------------//
+var washingFreq = metaData[0].wfreq ;
+console.log("washing", washingFreq)
+//call function
+guageScale(washingFreq) ;
+
 //---------------------------------------------------------------------//
 //on change : on selection of subject iDs
 //---------------------------------------------------------------------//
@@ -87,13 +112,22 @@ function getData() {
     //get x and y values from the object and sort in ascending
     var x = topOtuSampleObj[0].topOtuSamples ;
     var y = topOtuSampleObj[0].topOtuIds ;
-    
+    var z = topOtuSampleObj[0].topOtuLabels ;
+        
     //restyle the plots
     Plotly.restyle('bar', "x", [x]);
     Plotly.restyle('bar', "y", [y]);
+    Plotly.restyle('bar', "text", [z]);
 
     //call metadataId function to generate metadata info
-    metaDataforID(selectedDrpDownValue) ;
+    var washFreq = metaDataforID(selectedDrpDownValue) ;
+
+    //call function bubbleGetDataForId for the seelcted ID
+    bubbleGetDataForId(selectedDrpDownValue) ;
+
+    //call function to create a guage
+    guageScale(washFreq[0].wfreq)
+
 }
 
 
@@ -111,7 +145,7 @@ function getDataForID(id) {
     }];
     
     console.log(`Top 10 data for slected ID ${id}` , top10Obj) ;
-
+    
     return top10Obj ;
 }
 
@@ -142,5 +176,136 @@ function metaDataforID(ID) {
             demoInfo.append('p').text(`${key}: ${value}`)
                                                     }); 
                                     });  
+    return defaultMetadata ;
 }
+
+
+//-----------------------------------------------------//
+//Function to get Bubble Data
+//-----------------------------------------------------//
+function bubbleGetDataForId(id) {
+    var bubbleDataObj = data.samples.filter(obj => obj.id === id) ;
+    console.log(`Bubble data for slected ID ${id}` , bubbleDataObj) ;
     
+    bubblechart(bubbleDataObj) ;
+    
+}
+
+
+//-----------------------------------------------------//
+//Function to Create a Bubble Chart
+//------------------------------------------------------//
+function bubblechart(bubbleData){
+    var trace1 = {
+        x: bubbleData[0].otu_ids,
+        y: bubbleData[0].sample_values,
+        text: bubbleData[0].otu_labels,
+        mode: 'markers',
+        marker: {
+          color: bubbleData[0].otu_ids,
+          opacity: [2],
+          size: bubbleData[0].sample_values,
+          
+                }
+                 };
+  
+    var data = [trace1];
+  
+    var layout = {
+      title:`<b>Bacteria cultures in T. Sub ID.${bubbleData[0].id}<b>`,
+      showlegend: false,
+      height:600,
+      xaxis: {
+          title :{
+              text:'OTU ID'
+          }
+      },
+      hoverlabel:{
+        bgcolor: "black",
+        font: {color: 'white'}
+    },
+                 };
+  
+    Plotly.newPlot('bubble', data, layout, {responsive : true});
+}
+
+//---------------------------------------------------------//
+//Function to create a guage scale
+//code from : https://www.instructables.com/Showing-Charts-and-Gauges-of-IOT-Device-Data-Using/
+//--------------------------------------------------------//
+
+function guageScale(d) {
+    // Enter a speed between 0 and 180
+var level = d * 180/9;
+
+// Trig to calc meter point
+var degrees = 180 - level,
+     radius = .7;
+var radians = degrees * Math.PI / 180;
+var x = radius * Math.cos(radians);
+var y = radius * Math.sin(radians);
+
+// Path: may have to change to create a better triangle
+var mainPath = 'M -.0 -0.03 L .0 0.03 L';
+     pathX = String(x);
+     space = ' ';
+     pathY = String(y);
+     pathEnd = ' Z';
+var path = mainPath.concat(pathX,space,pathY,pathEnd);
+
+var data = [{ type: 'scatter',
+   x: [0], y:[0],
+    marker: {size: 20, color:'850000'},
+    showlegend: false,
+    name: 'freqency',
+    text: d,
+    hoverinfo: 'text+name',
+    },
+    
+  { values: [50 / 9, 50 / 9, 50 / 9, 50 / 9, 50 / 9, 50 / 9, 50 / 9, 50 / 9, 50 / 9, 50],
+        rotation: 90,
+        stroke:'black',
+        text: ["8-9", "7-8", "6-7", "5-6", "4-5", "3-4", "2-3", "1-2", "0-1", ""],
+        textinfo: "text",
+        textposition: "inside",
+        marker: {
+          colors: [
+            "rgba(24, 130, 100, .5)",
+            "rgba(40, 50, 200, .5)",
+            "rgba(14, 12, 40, .5)",
+            "rgba(200, 154, 102, .5)",
+            "rgba(250, 200, 20, .5)",
+            "rgba(50, 150, 255, .5)",
+            "rgba(150, 20, 200, .5)",
+            "rgba(232, 100, 102, .5)",
+            "rgba(24, 130, 100, .5)",
+            "rgba(255, 255, 255, 0)"
+          ]
+        },
+        labels: ["8-9", "7-8", "6-7", "5-6", "4-5", "3-4", "2-3", "1-2", "0-1", ""],
+        hoverinfo: "label",
+        hole: 0.5,
+        type: "pie",
+        showlegend: false
+}];
+
+var layout = {
+  shapes:[{
+      type: 'path',
+      path: path,
+      fillcolor: '850000',
+      line: {
+        color: '850000'
+      }
+    }],
+  title: '<b>Belly Button Washing Frequency</b> <br> Scrubs per week',
+  height: 500,
+  width: 500,
+  xaxis: {zeroline:false, showticklabels:false,
+             showgrid: false, range: [-1, 1]},
+  yaxis: {zeroline:false, showticklabels:false,
+             showgrid: false, range: [-1, 1]}
+};
+
+Plotly.newPlot('gauge', data, layout, {responsive : true});
+}
