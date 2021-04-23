@@ -3,7 +3,7 @@
 //---------------------//
 
 function init(x,y,z) {
-    // create a trace for bar Chart
+    // create a trace for the bar Chart
 var trace1 = {
     x: x , 
     y: y,
