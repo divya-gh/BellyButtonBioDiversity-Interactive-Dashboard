@@ -1,7 +1,7 @@
 # Plotly.ly-Belly Button Biodiversity
 Belly Button Biodiversity  - Interactive Dashboard built with HTML, Bootstrap, JavaScript, D3.js, and Plotly.ly.
 
-__GitHub Page :__ [divya-gh.github.io/Plotly.ly](https://divya-gh.github.io/Plotly.ly-Challenge/)
+__GitHub Page :__ [divya-gh.github.io/Plotly.ly](https://divya-gh.github.io/BellyButtonBioDiversity-Interactive-Dashboard/)
 
 
 ## Table of contents
